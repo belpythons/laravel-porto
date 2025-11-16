@@ -6,33 +6,183 @@ use Illuminate\Http\Request;
 
 class PortfolioController extends Controller
 {
-    public function index()
+    /**
+     * Menyimpan semua data profil, diambil dari config/site.ts dan config/socials.ts
+     */
+    private function getProfileData()
     {
-        $profile = [
-            'nama' => 'Nama Anda',
-            'nim' => '123456789',
-            'jenis_kelamin' => 'Laki-laki',
-            'alamat' => 'Alamat Anda'
-        ];
-
-        $portfolio = [
-            'pengalaman' => [
-                'Contoh pengalaman pertama',
-                'Contoh pengalaman kedua'
-            ],
-            'prestasi' => [
-                'Contoh prestasi pertama',
-                'Contoh prestasi kedua'
-            ],
-            'pengalaman_kerja' => [
-                'Contoh pekerjaan pertama',
-                'Contoh pekerjaan kedua'
+        return [
+            'nama' => 'Belva ',
+            'deskripsi' => 'Seorang pengembang web front-end yang bersemangat dengan keahlian dalam React-node dan laravel, berdedikasi untuk menciptakan pengalaman pengguna yang mulus dan menarik secara visual.',
+            'alamat' => 'Bontang, Indonesia', // Data tambahan dari controller lama
+            'nim' => '202312066', // Data tambahan dari controller lama
+            'jenis_kelamin' => 'Laki-laki', // Data tambahan dari controller lama
+            'socials' => [
+                ['name' => 'GitHub', 'url' => 'https://github.com/belpythons'],
+                ['name' => 'LinkedIn', 'url' => 'https://www.linkedin.com/in/belva-pranama-01048a346/'],
+                ['name' => 'Twitter', 'url' => 'https://x.com/belpythons'],
+                ['name' => 'Instagram', 'url' => 'https://instagram.com/belpythons'],
             ]
         ];
+    }
 
-        return view('portfolio', [
-            'profile' => $profile,
-            'portfolio' => $portfolio
-        ]);
+    /**
+     * Mengambil data dari config/experience.ts
+     */
+    private function getExperienceData()
+    {
+        return [
+            [
+                'title' => 'Asisten laboratorium',
+                'company' => 'STITEK Bontang',
+                'year' => '2022-2023',
+                'description' => 'Bertanggung jawab atas praktikum, penjadwalan, dan dokumentasi pada saat praktikum.',
+                'logo' => 'https_placeholder_com/150' // Ganti dengan path logo jika ada
+            ],
+            // Tambahkan pengalaman lain di sini jika ada
+        ];
+    }
+
+    /**
+     * Mengambil data dari config/projects.ts
+        */
+    private function getProjectsData()
+        {
+            return [
+                [
+                    'title' => 'PERPUS - Sistem Manajemen Toko Buku',
+                    'description' => 'Aplikasi web toko buku dengan sistem admin untuk mengelola inventori, transaksi, dan autentikasi pengguna.',
+                    'tech' => ['PHP', 'MySQL', 'HTML 5', 'CSS 3', 'Javascript'],
+                    'link' => 'https://vigilant-increase-roy.sgp.dom.my.id/'
+                ],
+                [
+                    'title' => 'Online Learning Platform',
+                    'description' => 'Platform pembelajaran online (React/Node) dengan kursus gratis, roadmap karir, dan forum diskusi.',
+                    'tech' => ['React', 'Tailwind CSS', 'Node.js', 'express.js', 'MySQL'],
+                    'link' => 'https://online-learning-website-six.vercel.app/'
+                ],
+                [
+                    'title' => 'React Calculator (OOP Approach)',
+                    'description' => 'Aplikasi kalkulator modern menggunakan React dengan pendekatan Object-Oriented Programming (OOP).',
+                    'tech' => ['React', 'Javascript', 'HTML 5', 'CSS 3'],
+                    'link' => 'https://react-calc-ten.vercel.app/'
+                ],
+            ];
+        }
+
+    /**
+     * Mengambil data dari config/skills.ts
+     */
+    private function getSkillsData()
+    {
+        return [
+            [
+                'category' => 'Bahasa Pemrograman',
+                'skills' => [
+                    ['name' => 'TypeScript', 'rating' => 4],
+                    ['name' => 'JavaScript', 'rating' => 4],
+                    ['name' => 'Python', 'rating' => 3],
+                    ['name' => 'PHP', 'rating' => 3],
+                ]
+            ],
+            [
+                'category' => 'Frontend',
+                'skills' => [
+                    ['name' => 'Next.js', 'rating' => 5],
+                    ['name' => 'React', 'rating' => 4],
+                    ['name' => 'Tailwind CSS', 'rating' => 5],
+                    ['name' => 'HTML', 'rating' => 5],
+                    ['name' => 'CSS', 'rating' => 4],
+                ]
+            ],
+            [
+                'category' => 'Backend',
+                'skills' => [
+                    ['name' => 'Node.js', 'rating' => 3],
+                    ['name' => 'Firebase', 'rating' => 4],
+                    ['name' => 'MySQL', 'rating' => 3],
+                ]
+            ],
+            [
+                'category' => 'Tools & Lainnya',
+                'skills' => [
+                    ['name' => 'Git', 'rating' => 4],
+                    ['name' => 'Docker', 'rating' => 2],
+                    ['name' => 'Figma', 'rating' => 3],
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * Mengambil data dari config/contributions.ts
+     */
+    private function getContributionsData()
+    {
+        return [
+            [
+                'title' => 'Perbaikan frontend di Repositori mangaphase',
+                'description' => 'meningkatkan dan memperbaiki frontend pada tampilan website baca menga.',
+                'url' => 'https://github.com/mangaphase',
+            ],
+            [
+                'title' => 'Full Stack developing Proyek suvi training',
+                'description' => 'memperbaiki dan memodifikasi API pada backend dan membuat tampilan pada frontend.',
+                'url' => 'https://github.com/suvi-course-program',
+            ],
+        ];
+    }
+
+    /**
+     * Helper untuk mendapatkan data dasar (profil dan navigasi)
+     */
+    private function getBaseData($activePage)
+    {
+        return [
+            'profile' => $this->getProfileData(),
+            'navigation' => [
+                ['name' => 'Home', 'route' => 'portfolio.home', 'active' => $activePage === 'home'],
+                ['name' => 'Experience', 'route' => 'portfolio.experience', 'active' => $activePage === 'experience'],
+                ['name' => 'Projects', 'route' => 'portfolio.projects', 'active' => $activePage === 'projects'],
+                ['name' => 'Skills', 'route' => 'portfolio.skills', 'active' => $activePage === 'skills'],
+                ['name' => 'Contributions', 'route' => 'portfolio.contributions', 'active' => $activePage === 'contributions'],
+            ]
+        ];
+    }
+
+    // --- METODE UNTUK SETIAP HALAMAN ---
+
+    public function home()
+    {
+        $data = $this->getBaseData('home');
+        return view('portfolio', $data);
+    }
+
+    public function experience()
+    {
+        $data = $this->getBaseData('experience');
+        $data['experiences'] = $this->getExperienceData();
+        return view('experience', $data);
+    }
+
+    public function projects()
+    {
+        $data = $this->getBaseData('projects');
+        $data['projects'] = $this->getProjectsData();
+        return view('projects', $data);
+    }
+
+    public function skills()
+    {
+        $data = $this->getBaseData('skills');
+        $data['skillCategories'] = $this->getSkillsData();
+        return view('skills', $data);
+    }
+
+    public function contributions()
+    {
+        $data = $this->getBaseData('contributions');
+        $data['contributions'] = $this->getContributionsData();
+        return view('contributions', $data);
     }
 }

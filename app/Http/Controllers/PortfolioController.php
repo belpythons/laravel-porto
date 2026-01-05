@@ -45,30 +45,30 @@ class PortfolioController extends Controller
 
     /**
      * Mengambil data dari config/projects.ts
-        */
+     */
     private function getProjectsData()
-        {
-            return [
-                [
-                    'title' => 'PERPUS - Sistem Manajemen Toko Buku',
-                    'description' => 'Aplikasi web toko buku dengan sistem admin untuk mengelola inventori, transaksi, dan autentikasi pengguna.',
-                    'tech' => ['PHP', 'MySQL', 'HTML 5', 'CSS 3', 'Javascript'],
-                    'link' => 'https://vigilant-increase-roy.sgp.dom.my.id/'
-                ],
-                [
-                    'title' => 'Online Learning Platform',
-                    'description' => 'Platform pembelajaran online (React/Node) dengan kursus gratis, roadmap karir, dan forum diskusi.',
-                    'tech' => ['React', 'Tailwind CSS', 'Node.js', 'express.js', 'MySQL'],
-                    'link' => 'https://online-learning-website-six.vercel.app/'
-                ],
-                [
-                    'title' => 'React Calculator (OOP Approach)',
-                    'description' => 'Aplikasi kalkulator modern menggunakan React dengan pendekatan Object-Oriented Programming (OOP).',
-                    'tech' => ['React', 'Javascript', 'HTML 5', 'CSS 3'],
-                    'link' => 'https://react-calc-ten.vercel.app/'
-                ],
-            ];
-        }
+    {
+        return [
+            [
+                'title' => 'PERPUS - Sistem Manajemen Toko Buku',
+                'description' => 'Aplikasi web toko buku dengan sistem admin untuk mengelola inventori, transaksi, dan autentikasi pengguna.',
+                'tech' => ['PHP', 'MySQL', 'HTML 5', 'CSS 3', 'Javascript'],
+                'link' => 'https://vigilant-increase-roy.sgp.dom.my.id/'
+            ],
+            [
+                'title' => 'Online Learning Platform',
+                'description' => 'Platform pembelajaran online (React/Node) dengan kursus gratis, roadmap karir, dan forum diskusi.',
+                'tech' => ['React', 'Tailwind CSS', 'Node.js', 'express.js', 'MySQL'],
+                'link' => 'https://online-learning-website-six.vercel.app/'
+            ],
+            [
+                'title' => 'React Calculator (OOP Approach)',
+                'description' => 'Aplikasi kalkulator modern menggunakan React dengan pendekatan Object-Oriented Programming (OOP).',
+                'tech' => ['React', 'Javascript', 'HTML 5', 'CSS 3'],
+                'link' => 'https://react-calc-ten.vercel.app/'
+            ],
+        ];
+    }
 
     /**
      * Mengambil data dari config/skills.ts
@@ -150,6 +150,22 @@ class PortfolioController extends Controller
         ];
     }
 
+    /**
+     * Mengambil data pendidikan (ditambahkan untuk CV)
+     */
+    private function getEducationData()
+    {
+        return [
+            [
+                'school' => 'STITEK Bontang',
+                'degree' => 'S1 Teknik Informatika',
+                'year' => '2023 - Present',
+                'description' => 'Focusing on Software Engineering and Web Technologies.',
+            ],
+            // Add more if needed
+        ];
+    }
+
     // --- METODE UNTUK SETIAP HALAMAN ---
 
     public function home()
@@ -184,5 +200,27 @@ class PortfolioController extends Controller
         $data = $this->getBaseData('contributions');
         $data['contributions'] = $this->getContributionsData();
         return view('contributions', $data);
+    }
+
+    /**
+     * Download ATS-Friendly Resume PDF
+     */
+    public function downloadCv()
+    {
+        $data = [
+            'profile' => $this->getProfileData(),
+            'experiences' => $this->getExperienceData(),
+            'education' => $this->getEducationData(),
+            'skills' => $this->getSkillsData(),
+            'projects' => $this->getProjectsData(),
+        ];
+
+        // Ensure these extra fields exist in profile for the CV
+        $data['profile']['email'] = 'belvapranamasriwibowo@gmail.com';
+        $data['profile']['phone'] = '085822112870';
+        $data['profile']['location'] = 'Bontang, East Kalimantan';
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.cv-ats', $data);
+        return $pdf->download('Resume_Belva_Pranama.pdf');
     }
 }
